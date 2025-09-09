@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/outline_home_24"
+        android:title="Anasayfa" />
+    <item
+        android:id="@+id/nav_add"
+        android:icon="@drawable/outline_add_24"
+        android:title="Ekle" />
+    <item
+        android:id="@+id/nav_progress"
+        android:icon="@drawable/outline_analytics_24"
+        android:title="İlerleme" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="Profil" />
+</menu>
