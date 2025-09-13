@@ -1,6 +1,8 @@
 <resources>
     <!-- Normal uygulama teması -->
-    <style name="Theme.Habbit" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.Habbit" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
 
     <!-- Splash teması -->
     <style name="Theme.Habbit.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -8,4 +10,5 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
 </resources>
