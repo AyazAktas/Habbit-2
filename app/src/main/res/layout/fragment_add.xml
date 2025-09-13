@@ -86,7 +86,7 @@
             <EditText
                 android:id="@+id/etDescription"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:background="@drawable/bg_edittext"
                 android:gravity="top"
                 android:hint="Örneğin &quot;20 sayfa okuyacağım&quot;"
