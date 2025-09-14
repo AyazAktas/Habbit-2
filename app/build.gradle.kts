@@ -7,6 +7,10 @@ android {
     namespace = "com.example.habbit"
     compileSdk = 36
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.example.habbit"
         minSdk = 24
