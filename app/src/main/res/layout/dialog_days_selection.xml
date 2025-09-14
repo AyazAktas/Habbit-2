@@ -1,0 +1,59 @@
+<com.google.android.material.chip.ChipGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chipGroupDays"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    app:singleSelection="false">
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipMonday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pazartesi" />
+
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipTuesday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Salı" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipWednesday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Çarşamba" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipThursday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Perşembe" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipFriday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cuma" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipSaturday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cumartesi" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipSunday"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pazar" />
+
+</com.google.android.material.chip.ChipGroup>
