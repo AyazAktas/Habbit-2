@@ -1,4 +1,4 @@
-package com.example.habbit.prefs
+package com.example.habbit.data.prefs
 
 import android.content.Context
 

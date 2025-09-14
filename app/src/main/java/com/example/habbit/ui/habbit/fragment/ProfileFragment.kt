@@ -1,4 +1,4 @@
-package com.example.habbit.fragment
+package com.example.habbit.ui.habbit.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

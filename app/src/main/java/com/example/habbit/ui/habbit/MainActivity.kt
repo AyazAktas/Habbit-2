@@ -1,16 +1,13 @@
-package com.example.habbit
+package com.example.habbit.ui.habbit
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.habbit.fragment.AddFragment
-import com.example.habbit.fragment.HomeFragment
-import com.example.habbit.fragment.ProfileFragment
-import com.example.habbit.fragment.ProgressFragment
+import com.example.habbit.R
+import com.example.habbit.ui.habbit.fragment.AddFragment
+import com.example.habbit.ui.habbit.fragment.HomeFragment
+import com.example.habbit.ui.habbit.fragment.ProfileFragment
+import com.example.habbit.ui.habbit.fragment.ProgressFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

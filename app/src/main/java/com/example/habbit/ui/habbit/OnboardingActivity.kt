@@ -1,16 +1,13 @@
-package com.example.habbit
+package com.example.habbit.ui.habbit
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.example.habbit.adapter.OnboardAdapter
-import com.example.habbit.prefs.Prefs
+import com.example.habbit.R
+import com.example.habbit.data.prefs.Prefs
 
 class OnboardingActivity : AppCompatActivity() {
 

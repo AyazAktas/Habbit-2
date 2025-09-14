@@ -9,7 +9,7 @@
 
         <!-- LauncherActivity artık giriş noktası -->
         <activity
-            android:name=".LauncherActivity"
+            android:name=".ui.habbit.LauncherActivity"
             android:exported="true"
             android:theme="@style/Theme.Habbit.Splash">
             <intent-filter>
@@ -20,12 +20,12 @@
 
         <!-- Onboarding ekranı -->
         <activity
-            android:name=".OnboardingActivity"
+            android:name=".ui.habbit.OnboardingActivity"
             android:exported="false" />
 
         <!-- Ana ekran -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.habbit.MainActivity"
             android:exported="false" />
 
     </application>

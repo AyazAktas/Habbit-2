@@ -1,4 +1,4 @@
-package com.example.habbit.adapter
+package com.example.habbit.ui.habbit
 
 import android.view.LayoutInflater
 import android.view.View
