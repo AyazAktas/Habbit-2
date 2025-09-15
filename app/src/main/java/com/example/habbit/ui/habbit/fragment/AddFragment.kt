@@ -2,6 +2,7 @@ package com.example.habbit.ui.habbit.fragment
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -24,6 +25,8 @@ class AddFragment : Fragment(R.layout.fragment_add) {
     private var selectedDate: Long = System.currentTimeMillis()
     private var selectedIconId: Int? = null
 
+    private var selectedTime: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAddBinding.bind(view)
@@ -32,7 +35,7 @@ class AddFragment : Fragment(R.layout.fragment_add) {
         binding.rgRepetition.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbDaily -> {
-                    // Günlük seçildi, ekstra modal açmaya gerek yok
+                    showTimePicker()
                 }
                 R.id.rbSpecificDays -> {
                     showDaysSelectionDialog()
@@ -140,5 +143,20 @@ class AddFragment : Fragment(R.layout.fragment_add) {
         datePicker.show()
     }
 
+    private fun showTimePicker() {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePicker = TimePickerDialog(requireContext(), { _, h, m ->
+            selectedTime = String.format("%02d:%02d", h, m)
+
+            // Kullanıcıya göstermek için startDate alanına da ekleyebilirsin
+            val currentText = binding.etStartDate.text.toString()
+            binding.etStartDate.setText("$currentText  $selectedTime")
+        }, hour, minute, true)
+
+        timePicker.show()
+    }
 
 }
