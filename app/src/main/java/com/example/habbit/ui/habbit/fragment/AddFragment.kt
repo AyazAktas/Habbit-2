@@ -150,12 +150,7 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         val timePicker = TimePickerDialog(requireContext(), { _, h, m ->
             selectedTime = String.format("%02d:%02d", h, m)
-
-            // Kullanıcıya göstermek için startDate alanına da ekleyebilirsin
-            val currentText = binding.etStartDate.text.toString()
-            binding.etStartDate.setText("$currentText  $selectedTime")
         }, hour, minute, true)
-
         timePicker.show()
     }
 
