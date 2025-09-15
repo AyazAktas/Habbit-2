@@ -11,10 +11,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import com.example.habbit.R
+import com.example.habbit.data.local.AppDatabase
+import com.example.habbit.data.local.entity.Habit
+import com.example.habbit.data.repository.HabitRepository
 import com.example.habbit.databinding.FragmentAddBinding
+import com.example.habbit.ui.habbit.ViewModel.AddHabitViewModel
+import com.example.habbit.ui.habbit.ViewModelFactory.AddHabitViewModelFactory
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import java.sql.Date
 import java.util.Locale
 
 class AddFragment : Fragment(R.layout.fragment_add) {
@@ -22,10 +30,15 @@ class AddFragment : Fragment(R.layout.fragment_add) {
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var viewModel: AddHabitViewModel
     private var selectedDate: Long = System.currentTimeMillis()
     private var selectedIconId: Int? = null
 
     private var selectedTime: String? = null
+
+    private var repetitionType: String? = null
+
+    private var repetitionValue: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,12 +48,15 @@ class AddFragment : Fragment(R.layout.fragment_add) {
         binding.rgRepetition.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbDaily -> {
+                    repetitionType = "daily"
                     showTimePicker()
                 }
                 R.id.rbSpecificDays -> {
+                    repetitionType = "weekly"
                     showDaysSelectionDialog()
                 }
                 R.id.rbCustomPeriod -> {
+                    repetitionType = "custom"
                     showCustomPeriodDialog()
                 }
             }
@@ -52,6 +68,16 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         binding.icCalendar.setOnClickListener {
             showDatePicker()
+        }
+
+        val dao = AppDatabase.getInstance(requireContext()).habitDao()
+        val repository = HabitRepository(dao)
+        val factory = AddHabitViewModelFactory(repository)
+
+        viewModel= ViewModelProvider(this,factory)[AddHabitViewModel::class.java]
+
+        binding.btnAddHabit.setOnClickListener {
+            saveHabit()
         }
 
     }
@@ -99,6 +125,7 @@ class AddFragment : Fragment(R.layout.fragment_add) {
                         selectedDays.add(chip.text.toString())
                     }
                 }
+                repetitionValue = selectedDays.joinToString(",")
                 Log.d("Habit", "Seçilen günler: $selectedDays")
             }
             .setNegativeButton("İptal", null)
@@ -117,6 +144,7 @@ class AddFragment : Fragment(R.layout.fragment_add) {
             .setPositiveButton("Tamam") { _, _ ->
                 val chosenPeriod = periods[selected]
                 Log.d("Habit", "Seçilen döngü: $chosenPeriod")
+                repetitionValue = chosenPeriod
             }
             .setNegativeButton("İptal", null)
             .show()
@@ -150,8 +178,28 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         val timePicker = TimePickerDialog(requireContext(), { _, h, m ->
             selectedTime = String.format("%02d:%02d", h, m)
+            repetitionValue = selectedTime
         }, hour, minute, true)
         timePicker.show()
+    }
+
+    private fun saveHabit(){
+        val name=binding.etName.text.toString()
+        val description=binding.etDescription.text.toString()
+        val icon=selectedIconId?:R.drawable.app_logo
+
+        val habit = Habit(
+            name = name,
+            description = description,
+            iconResId = icon,
+            repetitionType = repetitionType ?: "daily",
+            repetitionValue = repetitionValue,
+            startDate = Date(selectedDate),
+            reminderTime = selectedTime
+        )
+
+        viewModel.addHabit(habit)
+        Toast.makeText(requireContext(), "Alışkanlık eklendi!", Toast.LENGTH_SHORT).show()
     }
 
 }
