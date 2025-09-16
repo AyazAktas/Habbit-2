@@ -5,7 +5,7 @@ import com.example.habbit.data.local.entity.Habit
 
 class HabitRepository(private val habitDao: HabitDao) {
     fun getAllHabits()=habitDao.getAllHabits()
-    suspend fun insertHabit(habit: Habit)=habitDao.insertHabit(habit)
+    suspend fun insertHabit(habit: Habit): Long=habitDao.insertHabit(habit)
     suspend fun updateHabit(habit: Habit)=habitDao.updateHabit(habit)
     suspend fun deleteHabit(habit: Habit)=habitDao.deleteHabit(habit)
 }

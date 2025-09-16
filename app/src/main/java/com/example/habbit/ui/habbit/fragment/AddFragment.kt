@@ -20,6 +20,7 @@ import com.example.habbit.data.repository.HabitRepository
 import com.example.habbit.databinding.FragmentAddBinding
 import com.example.habbit.ui.habbit.ViewModel.AddHabitViewModel
 import com.example.habbit.ui.habbit.ViewModelFactory.AddHabitViewModelFactory
+import com.example.habbit.util.AlarmScheduler
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import java.sql.Date
@@ -183,10 +184,10 @@ class AddFragment : Fragment(R.layout.fragment_add) {
         timePicker.show()
     }
 
-    private fun saveHabit(){
-        val name=binding.etName.text.toString()
-        val description=binding.etDescription.text.toString()
-        val icon=selectedIconId?:R.drawable.app_logo
+    private fun saveHabit() {
+        val name = binding.etName.text.toString()
+        val description = binding.etDescription.text.toString()
+        val icon = selectedIconId ?: R.drawable.app_logo
 
         val habit = Habit(
             name = name,
@@ -198,8 +199,19 @@ class AddFragment : Fragment(R.layout.fragment_add) {
             reminderTime = selectedTime
         )
 
-        viewModel.addHabit(habit)
-        Toast.makeText(requireContext(), "Alışkanlık eklendi!", Toast.LENGTH_SHORT).show()
+        viewModel.addHabit(habit) { id ->
+            val habitWithId = habit.copy(id = id.toInt())
+            if (habitWithId.repetitionType == "daily") {
+                AlarmScheduler.scheduleDaily(requireContext(), habitWithId)
+            }
+            else if(habitWithId.repetitionType=="weekly"){
+                AlarmScheduler.scheduleWeekly(requireContext(),habitWithId)
+            }
+            else if(habitWithId.repetitionType=="custom"){
+                AlarmScheduler.scheduleCustom(requireContext(),habitWithId)
+            }
+            Log.d("Habit", "Kaydedildi ve alarm kuruldu: $habitWithId")
+        }
+        Toast.makeText(requireContext(), "Alışkanlık ${habit.name} eklendi!", Toast.LENGTH_SHORT).show()
     }
-
 }

@@ -10,9 +10,10 @@ import kotlinx.coroutines.launch
 class AddHabitViewModel(private val repository: HabitRepository) : ViewModel() {
     val allHabits: Flow<List<Habit>> = repository.getAllHabits()
 
-    fun addHabit(habit: Habit){
-        viewModelScope.launch{
-            repository.insertHabit(habit)
+    fun addHabit(habit: Habit, onInserted: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = repository.insertHabit(habit)
+            onInserted(id)
         }
     }
 
