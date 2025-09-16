@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:name=".HabitApp"
         android:icon="@mipmap/ic_launcher"
@@ -28,6 +29,10 @@
         <activity
             android:name=".ui.habbit.MainActivity"
             android:exported="false" />
+
+        <receiver
+            android:name=".notification.NotificationReceiver"
+            android:exported="true" />
 
     </application>
 
