@@ -1,0 +1,48 @@
+package com.example.habbit.util
+
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.icu.util.Calendar
+import com.example.habbit.data.local.entity.Habit
+import com.example.habbit.notification.NotificationReceiver
+import kotlin.math.min
+
+object AlarmScheduler {
+    fun scheduleDaily(context: Context, habit: Habit) {
+        val timeParts=habit.reminderTime?.split(":")
+        val hour=timeParts?.getOrNull(0)?.toIntOrNull()?:9
+        val minute=timeParts?.getOrNull(1)?.toIntOrNull()?:0
+
+        val calendar= Calendar.getInstance().apply {
+            timeInMillis= System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY,hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND,0)
+
+            if (before(Calendar.getInstance())){
+                add(Calendar.DATE,1)
+            }
+        }
+
+        val intent = Intent(context, NotificationReceiver::class.java).apply {
+            putExtra("habit_name",habit.name)
+        }
+
+        val pendingIntent= PendingIntent.getBroadcast(
+            context,
+            habit.id,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager=context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
+}
