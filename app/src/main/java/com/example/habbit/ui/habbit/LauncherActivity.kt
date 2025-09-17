@@ -3,7 +3,7 @@ package com.example.habbit.ui.habbit
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.habbit.data.prefs.Prefs
+import com.example.habbit.util.Prefs
 
 class LauncherActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

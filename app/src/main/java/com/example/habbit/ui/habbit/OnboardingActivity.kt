@@ -7,7 +7,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.habbit.R
-import com.example.habbit.data.prefs.Prefs
+import com.example.habbit.util.Prefs
 
 class OnboardingActivity : AppCompatActivity() {
 
