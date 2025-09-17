@@ -8,9 +8,7 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.habbit.R
@@ -18,8 +16,8 @@ import com.example.habbit.data.local.AppDatabase
 import com.example.habbit.data.local.entity.Habit
 import com.example.habbit.data.repository.HabitRepository
 import com.example.habbit.databinding.FragmentAddBinding
-import com.example.habbit.ui.habbit.ViewModel.AddHabitViewModel
-import com.example.habbit.ui.habbit.ViewModelFactory.AddHabitViewModelFactory
+import com.example.habbit.ui.habbit.ViewModel.HabitViewModel
+import com.example.habbit.ui.habbit.ViewModelFactory.HabitViewModelFactory
 import com.example.habbit.util.AlarmScheduler
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -31,7 +29,7 @@ class AddFragment : Fragment(R.layout.fragment_add) {
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: AddHabitViewModel
+    private lateinit var viewModel: HabitViewModel
     private var selectedDate: Long = System.currentTimeMillis()
     private var selectedIconId: Int? = null
 
@@ -73,9 +71,9 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         val dao = AppDatabase.getInstance(requireContext()).habitDao()
         val repository = HabitRepository(dao)
-        val factory = AddHabitViewModelFactory(repository)
+        val factory = HabitViewModelFactory(repository)
 
-        viewModel= ViewModelProvider(this,factory)[AddHabitViewModel::class.java]
+        viewModel= ViewModelProvider(this,factory)[HabitViewModel::class.java]
 
         binding.btnAddHabit.setOnClickListener {
             saveHabit()
