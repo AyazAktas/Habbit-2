@@ -77,8 +77,11 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         binding.btnAddHabit.setOnClickListener {
             saveHabit()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, HomeFragment())
+                .addToBackStack(null)
+                .commit()
         }
-
     }
 
     override fun onDestroyView() {
