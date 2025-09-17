@@ -3,6 +3,7 @@ package com.example.habbit.util
 import com.example.habbit.data.local.entity.Habit
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -36,6 +37,41 @@ object  HabitUtils {
                 val habitDateStr = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(habit.startDate)
                 todayStr == habitDateStr
             }
+        }
+    }
+
+    fun shouldShowHabitOnDate(habit: Habit, date: Date): Boolean {
+        val cal = Calendar.getInstance().apply { time = date }
+        val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) // 1= Pazar, 2= Pazartesi, ...
+
+        return when (habit.repetitionType) {
+            "daily" -> true
+            "weekly" -> {
+                // örnek: repetitionValue = "Pazartesi,Çarşamba"
+                habit.repetitionValue?.split(",")?.any { day ->
+                    day.equals(getDayName(dayOfWeek), ignoreCase = true)
+                } ?: false
+            }
+            "custom" -> {
+                // custom: örneğin "3 günde bir"
+                val diffDays = ((date.time - habit.startDate.time) / (1000 * 60 * 60 * 24)).toInt()
+                val interval = habit.repetitionValue?.split(" ")?.firstOrNull()?.toIntOrNull() ?: 1
+                diffDays % interval == 0
+            }
+            else -> false
+        }
+    }
+
+    private fun getDayName(dayOfWeek: Int): String {
+        return when (dayOfWeek) {
+            Calendar.MONDAY -> "Pazartesi"
+            Calendar.TUESDAY -> "Salı"
+            Calendar.WEDNESDAY -> "Çarşamba"
+            Calendar.THURSDAY -> "Perşembe"
+            Calendar.FRIDAY -> "Cuma"
+            Calendar.SATURDAY -> "Cumartesi"
+            Calendar.SUNDAY -> "Pazar"
+            else -> ""
         }
     }
 }
