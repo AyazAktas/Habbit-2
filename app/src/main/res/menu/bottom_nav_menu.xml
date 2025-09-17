@@ -14,6 +14,6 @@
         android:title="İlerleme" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/baseline_account_circle_24"
-        android:title="Profil" />
+        android:icon="@drawable/outline_app_settings_alt_24"
+        android:title="Ayarlar" />
 </menu>
