@@ -1,10 +1,9 @@
 package com.example.habbit.data.local
 
 import androidx.room.TypeConverter
-import java.sql.Date
+import java.util.Date
 
 class Converters {
-
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }

@@ -21,7 +21,7 @@ import com.example.habbit.ui.habbit.ViewModelFactory.HabitViewModelFactory
 import com.example.habbit.util.AlarmScheduler
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import java.sql.Date
+import java.util.Date
 import java.util.Locale
 
 class AddFragment : Fragment(R.layout.fragment_add) {

@@ -2,7 +2,7 @@ package com.example.habbit.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.sql.Date
+import java.util.Date
 
 @Entity(tableName = "habit")
 data class Habit(
