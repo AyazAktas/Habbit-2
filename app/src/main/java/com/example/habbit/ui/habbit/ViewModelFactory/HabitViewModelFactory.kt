@@ -3,14 +3,14 @@ package com.example.habbit.ui.habbit.ViewModelFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habbit.data.repository.HabitRepository
-import com.example.habbit.ui.habbit.ViewModel.AddHabitViewModel
+import com.example.habbit.ui.habbit.ViewModel.HabitViewModel
 
-class AddHabitViewModelFactory(
+class HabitViewModelFactory(
     private val repository: HabitRepository
 ): ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>):T{
-        if (modelClass.isAssignableFrom(AddHabitViewModel::class.java)){
-            return AddHabitViewModel(repository) as T
+        if (modelClass.isAssignableFrom(HabitViewModel::class.java)){
+            return HabitViewModel(repository) as T
         }
         throw IllegalArgumentException("Bilinmeyen ViewModel Sınıfı")
     }

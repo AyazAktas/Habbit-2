@@ -7,7 +7,7 @@ import com.example.habbit.data.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class AddHabitViewModel(private val repository: HabitRepository) : ViewModel() {
+class HabitViewModel(private val repository: HabitRepository) : ViewModel() {
     val allHabits: Flow<List<Habit>> = repository.getAllHabits()
 
     fun addHabit(habit: Habit, onInserted: (Long) -> Unit) {
