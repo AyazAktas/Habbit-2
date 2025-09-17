@@ -11,13 +11,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.habbit.R
 import com.example.habbit.data.local.entity.Habit
 
-class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
+class HabitAdapter(
+    private val onHabitChecked: (Habit, Boolean) -> Unit
+) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
     private val habitList = mutableListOf<Habit>()
+    private val completedIds = mutableSetOf<Int>() // hangi habitler işaretli tutulacak
 
-    fun setHabits(newList: List<Habit>) {
+    fun setHabits(newList: List<Habit>, completed: Set<Int>) {
         habitList.clear()
         habitList.addAll(newList)
+
+        completedIds.clear()
+        completedIds.addAll(completed)
+
         notifyDataSetChanged()
     }
 
@@ -28,26 +35,20 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
         private val cbDone: CheckBox = itemView.findViewById(R.id.checkBox)
 
         fun bind(habit: Habit) {
-            // İkon
             ivIcon.setImageResource(habit.iconResId)
-
-            // İsim
             tvName.text = habit.name
-
-            // Açıklama
             tvDescription.text = habit.description
 
-            cbDone.isChecked = false
+            cbDone.setOnCheckedChangeListener(null) // listener sıfırla
+
+            // 🔹 DB’den gelen set’e göre işaretle
+            cbDone.isChecked = completedIds.contains(habit.id)
+
             cbDone.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    Toast.makeText(
-                        itemView.context,
-                        "${habit.name} tamamlandı!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                onHabitChecked(habit, isChecked)
             }
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
