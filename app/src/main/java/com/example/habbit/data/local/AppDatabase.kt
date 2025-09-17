@@ -5,27 +5,49 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.habbit.data.local.dao.HabitCompletionDao
 import com.example.habbit.data.local.dao.HabitDao
 import com.example.habbit.data.local.entity.Habit
+import com.example.habbit.data.local.entity.HabitCompletion
 
 
-@Database(entities = [Habit::class], version = 1, exportSchema = true)
+@Database(
+    entities = [Habit::class, HabitCompletion::class],
+    version = 2,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
-    companion object{
-        @Volatile
-        private var INSTANCE: AppDatabase?=null
+    abstract fun habitCompletionDao(): HabitCompletionDao
 
-        fun getInstance(context: Context): AppDatabase{
-            return INSTANCE?:synchronized(this){
-                val instance= Room.databaseBuilder(
+    companion object {
+        @Volatile private var INSTANCE: AppDatabase? = null
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `habit_completion` " +
+                            "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "`habitId` INTEGER NOT NULL, " +
+                            "`date` INTEGER NOT NULL, " +
+                            "`isCompleted` INTEGER NOT NULL)"
+                )
+            }
+        }
+
+        fun getInstance(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "habbit_db"
-                ).build()
-                INSTANCE=instance
-                instance
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }
