@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.workDataOf
 import com.ayaz.habbit.R
 import com.ayaz.habbit.data.local.AppDatabase
 import com.ayaz.habbit.data.local.entity.Habit
@@ -18,7 +19,7 @@ import com.ayaz.habbit.data.repository.HabitRepository
 import com.ayaz.habbit.databinding.FragmentAddBinding
 import com.ayaz.habbit.ui.habbit.ViewModel.HabitViewModel
 import com.ayaz.habbit.ui.habbit.ViewModelFactory.HabitViewModelFactory
-import com.ayaz.habbit.util.AlarmScheduler
+import com.ayaz.habbit.util.WorkScheduler
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import java.util.Date
@@ -43,6 +44,11 @@ class AddFragment : Fragment(R.layout.fragment_add) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAddBinding.bind(view)
         setupIconSelection()
+
+        val today = Calendar.getInstance().time
+        val formattedToday = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(today)
+        binding.etStartDate.setText(formattedToday)
+        selectedDate = Calendar.getInstance().timeInMillis
 
         binding.rgRepetition.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -202,17 +208,34 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
         viewModel.addHabit(habit) { id ->
             val habitWithId = habit.copy(id = id.toInt())
-            if (habitWithId.repetitionType == "daily") {
-                AlarmScheduler.scheduleDaily(requireContext(), habitWithId)
+
+            when (habitWithId.repetitionType) {
+                "daily" -> {
+                    // Kullanıcının seçtiği saat/dakikayı parçala
+                    val timeParts = habitWithId.reminderTime?.split(":")
+                    val hour = timeParts?.getOrNull(0)?.toIntOrNull() ?: 9
+                    val minute = timeParts?.getOrNull(1)?.toIntOrNull() ?: 0
+
+                    val data = workDataOf(
+                        "habit_name" to habitWithId.name,
+                        "reminder_hour" to hour,
+                        "reminder_minute" to minute
+                    )
+                    WorkScheduler.scheduleDaily(requireContext(), data)
+                }
+
+                "weekly" -> {
+                    WorkScheduler.scheduleWeekly(requireContext(), habitWithId)
+                }
+
+                "custom" -> {
+                    WorkScheduler.scheduleCustom(requireContext(), habitWithId)
+                }
             }
-            else if(habitWithId.repetitionType=="weekly"){
-                AlarmScheduler.scheduleWeekly(requireContext(),habitWithId)
-            }
-            else if(habitWithId.repetitionType=="custom"){
-                AlarmScheduler.scheduleCustom(requireContext(),habitWithId)
-            }
-            Log.d("Habit", "Kaydedildi ve alarm kuruldu: $habitWithId")
+
+            Log.d("Habit", "Kaydedildi ve WorkManager ile planlandı: $habitWithId")
         }
+
         Toast.makeText(requireContext(), "Alışkanlık ${habit.name} eklendi!", Toast.LENGTH_SHORT).show()
     }
 }
