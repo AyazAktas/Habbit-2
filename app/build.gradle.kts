@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.habbit"
+    namespace = "com.ayaz.habbit"
     compileSdk = 36
 
     buildFeatures {
@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.habbit"
+        applicationId = "com.ayaz.habbit"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -53,7 +53,7 @@ dependencies {
     kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
 
-    // Lifecycle & ViewModel
+
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4") // güncel sürüm
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
 
