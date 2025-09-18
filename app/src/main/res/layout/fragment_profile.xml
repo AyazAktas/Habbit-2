@@ -13,9 +13,11 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Habit Silme -->
+
         <TextView
             android:id="@+id/tvProfileTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="88dp"
             android:layout_height="wrap_content"
             android:paddingBottom="24dp"
             android:text="Ayarlar"
@@ -23,14 +25,13 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- Habit Silme -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDeleteHabit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -47,8 +48,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -65,15 +66,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="0dp"

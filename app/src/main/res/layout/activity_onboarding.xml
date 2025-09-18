@@ -42,13 +42,6 @@
             android:layout_height="10dp"
             android:layout_margin="6dp"
             android:background="@drawable/indicator_inactive"/>
-
-        <View
-            android:id="@+id/dot3"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_margin="6dp"
-            android:background="@drawable/indicator_inactive"/>
     </LinearLayout>
 
     <Button
@@ -57,13 +50,13 @@
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
+        android:backgroundTint="#007AFF"
         android:text="Get Started"
         android:textAllCaps="false"
-        android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:background="@drawable/btn_primary_round"
-        app:layout_constraintTop_toBottomOf="@id/indicatorRow"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/indicatorRow" />
 </androidx.constraintlayout.widget.ConstraintLayout>

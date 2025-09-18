@@ -23,8 +23,7 @@ class OnboardingActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btnNext)
         dots = listOf(
             findViewById(R.id.dot1),
-            findViewById(R.id.dot2),
-            findViewById(R.id.dot3)
+            findViewById(R.id.dot2)
         )
 
         val pages = listOf(
@@ -77,9 +76,9 @@ class OnboardingActivity : AppCompatActivity() {
 
         // buton yazısı
         btnNext.text = when (position) {
-            0 -> "Get Started"
-            (vp.adapter?.itemCount ?: 1) - 1 -> "Finish"
-            else -> "Next"
+            0 -> "İleri"
+            (vp.adapter?.itemCount ?: 1) - 1 -> "Hadi Başlayalım"
+            else -> "Hadi Başlayalım"
         }
     }
 
