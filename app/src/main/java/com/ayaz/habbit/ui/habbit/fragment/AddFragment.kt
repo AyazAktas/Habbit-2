@@ -211,7 +211,6 @@ class AddFragment : Fragment(R.layout.fragment_add) {
 
             when (habitWithId.repetitionType) {
                 "daily" -> {
-                    // Kullanıcının seçtiği saat/dakikayı parçala
                     val timeParts = habitWithId.reminderTime?.split(":")
                     val hour = timeParts?.getOrNull(0)?.toIntOrNull() ?: 9
                     val minute = timeParts?.getOrNull(1)?.toIntOrNull() ?: 0
@@ -221,13 +220,11 @@ class AddFragment : Fragment(R.layout.fragment_add) {
                         "reminder_hour" to hour,
                         "reminder_minute" to minute
                     )
-                    WorkScheduler.scheduleDaily(requireContext(), data)
+                    WorkScheduler.scheduleDaily(requireContext(), data, habitWithId.id)
                 }
-
                 "weekly" -> {
                     WorkScheduler.scheduleWeekly(requireContext(), habitWithId)
                 }
-
                 "custom" -> {
                     WorkScheduler.scheduleCustom(requireContext(), habitWithId)
                 }

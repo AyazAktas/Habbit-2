@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object WorkScheduler {
 
-    // 🔹 Günlük tekrar
-    fun scheduleDaily(context: Context, habitData: Data) {
-        val habitName = habitData.getString("habit_name") ?: "Alışkanlık"
+    fun scheduleDaily(context: Context, habitData: Data, habitId: Int) {
         val hour = habitData.getInt("reminder_hour", 9)
         val minute = habitData.getInt("reminder_minute", 0)
 
@@ -26,38 +24,51 @@ object WorkScheduler {
 
         val delay = target.timeInMillis - now.timeInMillis
 
-        val data = workDataOf(
-            "habit_name" to habitName,
-            "reminder_hour" to hour,
-            "reminder_minute" to minute,
-            "repetition_type" to "daily"
-        )
-
-        val workRequest = OneTimeWorkRequestBuilder<HabitReminderWorker>()
-            .setInputData(data)
+        val workRequest = PeriodicWorkRequestBuilder<HabitReminderWorker>(1, TimeUnit.DAYS)
+            .setInputData(habitData)
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .build()
 
-        WorkManager.getInstance(context).enqueue(workRequest)
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "habit_daily_$habitId",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 
-    // 🔹 Haftalık tekrar
     fun scheduleWeekly(context: Context, habit: Habit) {
         val days = habit.repetitionValue?.split(",") ?: return
         for (day in days) {
             val dayOfWeek = mapDayToCalendar(day.trim())
+
             val data = workDataOf(
-                "habit_name" to habit.name,
-                "reminder_hour" to 9,
-                "reminder_minute" to 0,
-                "repetition_type" to "weekly",
-                "day_of_week" to dayOfWeek
+                "habit_name" to habit.name
             )
-            scheduleForDayOfWeek(context, data, dayOfWeek)
+
+            val now = Calendar.getInstance()
+            val target = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_WEEK, dayOfWeek)
+                set(Calendar.HOUR_OF_DAY, 9)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                if (before(now)) add(Calendar.WEEK_OF_YEAR, 1)
+            }
+
+            val delay = target.timeInMillis - now.timeInMillis
+
+            val workRequest = PeriodicWorkRequestBuilder<HabitReminderWorker>(7, TimeUnit.DAYS)
+                .setInputData(data)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                "habit_weekly_${habit.id}_$dayOfWeek",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                workRequest
+            )
         }
     }
 
-    // 🔹 Custom tekrar
     fun scheduleCustom(context: Context, habit: Habit) {
         val intervalDays = when (habit.repetitionValue) {
             "2 günde bir" -> 2
@@ -66,58 +77,31 @@ object WorkScheduler {
             "Haftada bir" -> 7
             else -> 1
         }
-        val data = workDataOf(
-            "habit_name" to habit.name,
-            "reminder_hour" to 9,
-            "reminder_minute" to 0,
-            "repetition_type" to "custom",
-            "interval_days" to intervalDays
-        )
-        scheduleWithInterval(context, data, intervalDays)
-    }
 
-    // 🔧 Belirli gün için planlama
-    fun scheduleForDayOfWeek(context: Context, habitData: Data, dayOfWeek: Int) {
+        val data = workDataOf("habit_name" to habit.name)
+
         val now = Calendar.getInstance()
         val target = Calendar.getInstance().apply {
-            set(Calendar.DAY_OF_WEEK, dayOfWeek)
-            set(Calendar.HOUR_OF_DAY, habitData.getInt("reminder_hour", 9))
-            set(Calendar.MINUTE, habitData.getInt("reminder_minute", 0))
-            set(Calendar.SECOND, 0)
-            if (before(now)) add(Calendar.WEEK_OF_YEAR, 1)
-        }
-
-        val delay = target.timeInMillis - now.timeInMillis
-
-        val workRequest = OneTimeWorkRequestBuilder<HabitReminderWorker>()
-            .setInputData(habitData)
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .build()
-
-        WorkManager.getInstance(context).enqueue(workRequest)
-    }
-
-    // 🔧 Belirli gün aralığıyla planlama
-    fun scheduleWithInterval(context: Context, habitData: Data, intervalDays: Int) {
-        val now = Calendar.getInstance()
-        val target = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, habitData.getInt("reminder_hour", 9))
-            set(Calendar.MINUTE, habitData.getInt("reminder_minute", 0))
+            set(Calendar.HOUR_OF_DAY, 9)
+            set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             if (before(now)) add(Calendar.DATE, intervalDays)
         }
 
         val delay = target.timeInMillis - now.timeInMillis
 
-        val workRequest = OneTimeWorkRequestBuilder<HabitReminderWorker>()
-            .setInputData(habitData)
+        val workRequest = PeriodicWorkRequestBuilder<HabitReminderWorker>(intervalDays.toLong(), TimeUnit.DAYS)
+            .setInputData(data)
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .build()
 
-        WorkManager.getInstance(context).enqueue(workRequest)
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "habit_custom_${habit.id}_$intervalDays",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 
-    // 🔧 Gün ismini Calendar sabitine çevir
     private fun mapDayToCalendar(day: String): Int {
         return when (day.lowercase()) {
             "pzt", "pazartesi" -> Calendar.MONDAY
