@@ -2,6 +2,7 @@ package com.ayaz.habbit.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
 
@@ -14,7 +15,8 @@ import java.util.Date
             childColumns = ["habitId"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["habitId", "date"], unique = true)]
 )
 data class HabitCompletion(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

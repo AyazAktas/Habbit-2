@@ -14,7 +14,7 @@ import com.ayaz.habbit.data.local.entity.HabitCompletion
 
 @Database(
     entities = [Habit::class, HabitCompletion::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -26,7 +26,6 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
 
-        // 1 → 2 (ilk completion tablosu, cascade yok)
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -42,7 +41,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // 2 → 3 (habit_completion tablosunu yeniden yarat → CASCADE ekle)
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -56,16 +54,23 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                     """
                 )
-
                 database.execSQL(
                     """
                     INSERT INTO habit_completion_new (id, habitId, date, isCompleted)
                     SELECT id, habitId, date, isCompleted FROM habit_completion
                     """
                 )
-
                 database.execSQL("DROP TABLE habit_completion")
                 database.execSQL("ALTER TABLE habit_completion_new RENAME TO habit_completion")
+            }
+        }
+
+        // 🔥 3 → 4 (UNIQUE index ekle)
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS index_habit_completion_habitId_date ON habit_completion(habitId, date)"
+                )
             }
         }
 
@@ -76,11 +81,10 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habbit_db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)
-                            // Foreign key desteğini garanti aç
                             db.execSQL("PRAGMA foreign_keys=ON;")
                         }
                     })
