@@ -21,10 +21,12 @@ import com.ayaz.habbit.ui.habbit.ViewModel.HabitViewModel
 import com.ayaz.habbit.ui.habbit.ViewModelFactory.HabitCompletionViewModelFactory
 import com.ayaz.habbit.ui.habbit.ViewModelFactory.HabitViewModelFactory
 import com.ayaz.habbit.util.HabitUtils
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Date
 
-class ProgressFragment : Fragment(R.layout.fragment_progress){
+class ProgressFragment : Fragment(R.layout.fragment_progress) {
+
     private lateinit var calendarView: CalendarView
     private lateinit var rvHabits: RecyclerView
     private lateinit var progressDaily: ProgressBar
@@ -45,8 +47,7 @@ class ProgressFragment : Fragment(R.layout.fragment_progress){
         tvProgressPercent = view.findViewById(R.id.tvProgressPercent)
 
         habitAdapter = HabitAdapter { habit, isChecked ->
-            val date = getStartOfDay(selectedDate)
-            completionViewModel.toggleCompletion(habit.id, date , isChecked)
+            completionViewModel.toggleCompletion(habit.id, selectedDate, isChecked)
         }
         rvHabits.layoutManager = LinearLayoutManager(requireContext())
         rvHabits.adapter = habitAdapter
@@ -66,7 +67,6 @@ class ProgressFragment : Fragment(R.layout.fragment_progress){
         calendarView.date = selectedDate.time
         loadHabitsForDate(selectedDate)
 
-        // 🔹 Kullanıcı takvimden başka gün seçerse
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val cal = Calendar.getInstance().apply {
                 set(year, month, dayOfMonth, 0, 0, 0)
@@ -90,16 +90,16 @@ class ProgressFragment : Fragment(R.layout.fragment_progress){
 
     private fun loadHabitsForDate(date: Date) {
         viewLifecycleOwner.lifecycleScope.launch {
-            kotlinx.coroutines.flow.combine(
+            combine(
                 habitViewModel.allHabits,
                 completionViewModel.getCompletionsByDate(date)
-            ){ habits, completions ->
+            ) { habits, completions ->
                 val filteredHabits = habits.filter { HabitUtils.shouldShowHabitOnDate(it, date) }
-                val completedIds = completions.filter { it.isCompleted }.map { it.habitId }.toSet()
-                Pair(filteredHabits, completedIds)
-            }.collect { (habits, completedIds) ->
-                habitAdapter.setHabits(habits, completedIds)
-                updateProgress(habits.size, completedIds.size)
+                val completed = completions.filter { it.isCompleted }.map { it.habitId }.toSet()
+                Pair(filteredHabits, completed)
+            }.collect { (habits, completed) ->
+                habitAdapter.setHabits(habits, completed)
+                updateProgress(habits.size, completed.size)
             }
         }
     }

@@ -14,13 +14,35 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCompletion(completion: HabitCompletion)
 
-    @Query("UPDATE habit_completion SET isCompleted = :isCompleted WHERE habitId = :habitId AND date = :date")
-    suspend fun updateCompletion(habitId: Int, date: Date, isCompleted: Boolean)
+    @Query("""
+        UPDATE habit_completion 
+        SET isCompleted = :isCompleted 
+        WHERE habitId = :habitId AND date BETWEEN :startOfDay AND :endOfDay
+    """)
+    suspend fun updateCompletion(
+        habitId: Int,
+        startOfDay: Date,
+        endOfDay: Date,
+        isCompleted: Boolean
+    )
 
-    @Query("SELECT * FROM habit_completion where date= :date")
-    fun getCompletionsByDate(date: Date): Flow<List<HabitCompletion>>
+    @Query("""
+        SELECT * FROM habit_completion 
+        WHERE date BETWEEN :startOfDay AND :endOfDay
+    """)
+    fun getCompletionsByDate(
+        startOfDay: Date,
+        endOfDay: Date
+    ): Flow<List<HabitCompletion>>
 
-    @Query("select * from habit_completion where habitId= :habitId and date= :date limit 1")
-    suspend fun getCompletionForHabit(habitId:Int,date: Date): HabitCompletion?
-
+    @Query("""
+        SELECT * FROM habit_completion 
+        WHERE habitId = :habitId AND date BETWEEN :startOfDay AND :endOfDay 
+        LIMIT 1
+    """)
+    suspend fun getCompletionForHabit(
+        habitId: Int,
+        startOfDay: Date,
+        endOfDay: Date
+    ): HabitCompletion?
 }

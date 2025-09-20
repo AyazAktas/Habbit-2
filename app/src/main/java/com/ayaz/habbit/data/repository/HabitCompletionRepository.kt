@@ -7,26 +7,44 @@ import java.util.Date
 
 class HabitCompletionRepository(private val dao: HabitCompletionDao) {
 
-    fun getCompletionsByDate(date: Date):Flow<List<HabitCompletion>>{
-        return  dao.getCompletionsByDate(date)
-    }
+    suspend fun toggleCompletion(habitId: Int, date: Date, isCompleted: Boolean) {
+        val (startOfDay, endOfDay) = getDayBounds(date)
+        val existing = dao.getCompletionForHabit(habitId, startOfDay, endOfDay)
 
-    suspend fun upsertCompletion(habitId:Int, date: Date, isCompleted: Boolean){
-        val existing = dao.getCompletionForHabit(habitId, date)
         if (existing == null) {
-            val completion = HabitCompletion(
-                habitId = habitId,
-                date = date,
-                isCompleted = isCompleted
+            dao.insertCompletion(
+                HabitCompletion(
+                    habitId = habitId,
+                    date = startOfDay, // 🔹 normalize ederek kaydediyoruz
+                    isCompleted = isCompleted
+                )
             )
-            dao.insertCompletion(completion)
         } else {
-            dao.updateCompletion(habitId, date, isCompleted)
+            dao.updateCompletion(habitId, startOfDay, endOfDay, isCompleted)
         }
     }
 
+    fun getCompletionsByDate(date: Date): Flow<List<HabitCompletion>> {
+        val (startOfDay, endOfDay) = getDayBounds(date)
+        return dao.getCompletionsByDate(startOfDay, endOfDay)
+    }
 
-    suspend fun getCompletionForHabit(habitId:Int,date: Date): HabitCompletion?{
-        return dao.getCompletionForHabit(habitId,date)
+    private fun getDayBounds(date: Date): Pair<Date, Date> {
+        val cal = java.util.Calendar.getInstance().apply {
+            time = date
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val startOfDay = cal.time
+
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 23)
+        cal.set(java.util.Calendar.MINUTE, 59)
+        cal.set(java.util.Calendar.SECOND, 59)
+        cal.set(java.util.Calendar.MILLISECOND, 999)
+        val endOfDay = cal.time
+
+        return Pair(startOfDay, endOfDay)
     }
 }

@@ -28,13 +28,12 @@ import java.util.Date
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var adapter: HabitAdapter
-    private lateinit var viewModel: HabitViewModel
+    private lateinit var habitViewModel: HabitViewModel
     private lateinit var completionViewModel: HabitCompletionViewModel
     private lateinit var progressDaily: ProgressBar
     private lateinit var tvProgressPercent: TextView
 
-    private var todayHabits: List<Habit> = emptyList()
-    private val completedHabits = mutableSetOf<Int>()
+    private var todayHabits: List<com.ayaz.habbit.data.local.entity.Habit> = emptyList()
     private var completedIds: Set<Int> = emptySet()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,46 +48,48 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             completionViewModel.toggleCompletion(habit.id, today, isChecked)
         }
 
-
         rvHabits.adapter = adapter
         rvHabits.layoutManager = LinearLayoutManager(requireContext())
 
-        val dao = AppDatabase.getInstance(requireContext()).habitDao()
-        val repository = HabitRepository(dao)
-        val factory = HabitViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
+        val db = AppDatabase.getInstance(requireContext())
+        habitViewModel = ViewModelProvider(
+            this,
+            HabitViewModelFactory(HabitRepository(db.habitDao()))
+        )[HabitViewModel::class.java]
 
-        val completionDao = AppDatabase.getInstance(requireContext()).habitCompletionDao()
-        val completionRepo = HabitCompletionRepository(completionDao)
-        val completionFactory = HabitCompletionViewModelFactory(completionRepo)
-        completionViewModel = ViewModelProvider(this, completionFactory)[HabitCompletionViewModel::class.java]
+        completionViewModel = ViewModelProvider(
+            this,
+            HabitCompletionViewModelFactory(HabitCompletionRepository(db.habitCompletionDao()))
+        )[HabitCompletionViewModel::class.java]
 
         val today = getTodayDate()
 
+        // 🔹 Combine habit + completion
         viewLifecycleOwner.lifecycleScope.launch {
             combine(
-                viewModel.allHabits,
+                habitViewModel.allHabits,
                 completionViewModel.getCompletionsByDate(today)
             ) { habits, completions ->
-                todayHabits = habits.filter { HabitUtils.shouldShowHabitToday(it) }
-                completedIds = completions.filter { it.isCompleted }.map { it.habitId }.toSet()
-            }.collect {
+                val filteredHabits = habits.filter { HabitUtils.shouldShowHabitToday(it) }
+                val completed = completions.filter { it.isCompleted }.map { it.habitId }.toSet()
+                Pair(filteredHabits, completed)
+            }.collect { (habits, completed) ->
+                todayHabits = habits
+                completedIds = completed
                 adapter.setHabits(todayHabits, completedIds)
                 updateProgress()
             }
         }
-
     }
 
     private fun updateProgress() {
         val total = todayHabits.size
-        val done = completedIds.size   // 🔹 artık sadece DB’den gelen set
+        val done = completedIds.size
         val percent = if (total > 0) (done * 100 / total) else 0
 
         progressDaily.progress = percent
         tvProgressPercent.text = "$percent%"
     }
-
 
     private fun getTodayDate(): Date {
         val cal = Calendar.getInstance().apply {
