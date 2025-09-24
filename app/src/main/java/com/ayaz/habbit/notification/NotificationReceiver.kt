@@ -16,6 +16,13 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val channelId="habbit_chanel"
         val habitName = intent.getStringExtra("habit_name") ?: "Alışkanlık"
+        val prefs=context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val enabled=prefs.getBoolean("notifications_enabled",true)
+        if (!enabled){
+            Log.d("Reciever","Kullanıcı bildirim özelliğini kapatmış. Bildirim gönderilemiyor.")
+            return
+        }
+
         Log.d("Receiver", "Alarm tetiklendi! Bildirim gönderiliyor...")
         val notification= NotificationCompat.Builder(context,channelId)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_round))
